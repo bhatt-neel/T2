@@ -19,14 +19,16 @@ if __name__ == '__main__':
 
     dp = updater.dispatcher
 
-    dp.add_handler(MessageHandler(Filters.text, message_handler))
-    dp.add_handler(MessageHandler(Filters.photo, photo_handler))
     dp.add_handler(CommandHandler('start', start_handler))
     dp.add_handler(CommandHandler('stop', stop_handler))
     dp.add_handler(CommandHandler('status', status_handler))
     dp.add_handler(CommandHandler('fund', fund_handler))
-    dp.add_handler(CommandHandler('tokenmap', tokenmap_handler))
+    dp.add_handler(CommandHandler('token', tokenmap_handler))
     dp.add_handler(CommandHandler('restart', restart_handler))
+
+    dp.add_handler(MessageHandler(Filters.text, message_handler))
+    dp.add_handler(MessageHandler(Filters.photo, photo_handler))
+
 
     updater.start_polling()
     print("Bot is ready to use!")

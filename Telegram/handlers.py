@@ -1,5 +1,5 @@
 from App.DataHub import *
-from restarts import *
+from Telegram.restarts import *
 from telegram import ParseMode
 
 def message_handler(update, context):
@@ -14,9 +14,9 @@ def photo_handler(update, context):
 
 def status_handler(update, context):
     if get_bot_status():
-        update.message.reply_text("**Bot Status:** Online\nTo stop it, please use the command `/stop`.")
+        update.message.reply_text("**Bot Status:** Online\nTo stop it, please use the command `/stop`.", parse_mode=ParseMode.MARKDOWN)
     else:
-        update.message.reply_text("**Bot Status:** Offline\nTo start it, please use the command `/start`.")
+        update.message.reply_text("**Bot Status:** Offline\nTo start it, please use the command `/start`.", parse_mode=ParseMode.MARKDOWN)
 
 
 def fund_handler(update, context):
@@ -32,8 +32,10 @@ def tokenmap_handler(update, context):
         update.message.reply_text("Token Map is not Updated")
 
 def restart_handler(update, context):
+    update.message.reply_text("Restarting Bot...")
     if UpdateTokenMap():
         update.message.reply_text("Token Map Updated Successfully !!")
+        update.message.reply_text("Bot Restarted Successfully !!")
     else:
         update.message.reply_text("Error While Updating Token Map")
 
@@ -41,6 +43,9 @@ def start_handler(update, context):
     if get_bot_status():
         update.message.reply_text("Bot is Already Online\nTo stop it, please use the command `/stop`.")
     else:
+        configInfo = get_config_obj()
+        configInfo.BotStatus = True
+        configInfo.save()
         update.message.reply_text("**Bot Status:** Online\nThe bot has been initiated! To stop it, please use the command `/stop`.",
                               parse_mode=ParseMode.MARKDOWN)
         
@@ -48,5 +53,8 @@ def stop_handler(update, context):
     if not get_bot_status():
         update.message.reply_text("Bot is Already Offline\nTo start it, please use the command `/start`.")
     else:
+        configInfo = get_config_obj()
+        configInfo.BotStatus = False
+        configInfo.save()
         update.message.reply_text("**Bot Status:** Offline\nThe bot has been Shutdown! To start it, please use the command `/start`.",
                               parse_mode=ParseMode.MARKDOWN)
