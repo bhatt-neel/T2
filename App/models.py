@@ -17,8 +17,12 @@ class Configuration(models.Model):
     AngleOneTotp = models.CharField(max_length=100)
     AngleOneClientId = models.CharField(max_length=100)
     AngleOneClientPin = models.CharField(max_length=100)
+
+    # =============== ANGLE ONE CODE CREDENTIALS =================
+    AngleOneAccessToken = models.CharField(max_length=100, null=True, blank=True)
+    AngleOneRefreshToken = models.CharField(max_length=100, null=True, blank=True)
+    AngleOneUserId = models.CharField(max_length=100, null=True, blank=True)
     AngleOneFeedToken = models.CharField(max_length=100, null=True, blank=True)
-    AngleOneObj = models.CharField(max_length=100, null=True, blank=True)
 
     # =============== IMG-TO-TEXT =================
     ImgToTextApiLayer = models.CharField(max_length=100)

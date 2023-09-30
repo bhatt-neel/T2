@@ -1,4 +1,6 @@
 from .models import Strategy, Transaction, Order, Configuration
+import os
+import datetime
 
 def get_strategy_by_code(StrategyCode):
     try:
@@ -22,4 +24,24 @@ def get_bot_status():
     except:
         return False
     
+def is_token_map_updated():
+
+    try:
+        print("Checking Token Map")
+        TokenMapPath = os.getcwd() + "/static/TokenMapCsv/"
+        items_in_directory = os.listdir(TokenMapPath)
+        files_in_directory = [item for item in items_in_directory if os.path.isfile(os.path.join(TokenMapPath, item))]
+        TodaysDate = datetime.datetime.now().strftime("%Y-%m-%d")
+        ExpectedFileName = TodaysDate + ".csv"
+
+        if ExpectedFileName in files_in_directory:
+            print("Token Map is Updated")
+            return True
+        else:
+            print("Token Map is not Updated")
+            return False
+        
+    except:
+        print("Error While Checking Token Map")
+        return False
     
