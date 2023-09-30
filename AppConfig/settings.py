@@ -69,9 +69,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
 
-            # 'libraries': {
-            #     'custom_filter': 'templatetags.custom_filter',
-            # }
+            'libraries': {
+                'custom_filter': 'templatetags.custom_filter',
+            }
         },
     },
 ]

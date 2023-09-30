@@ -3,3 +3,12 @@ django
 django-admin-interface
 djangorestframework
 djangorestframework-simplejwt
+python-dateutil
+google-generativeai
+requests
+smartapi-python
+pyotp
+pytz
+python-telegram-bot==13.7
+pandas
+websocket-client

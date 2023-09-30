@@ -9,7 +9,6 @@ class Configuration(models.Model):
     
     # =============== TELEGRAM CREDENTIALS =================
     TelegramToken = models.CharField(max_length=100)
-    BotStatus = models.BooleanField(default=False)
 
     # =============== ANGLE ONE CREDENTIALS =================
     AngleOneUserName = models.CharField(max_length=100)
@@ -39,6 +38,8 @@ class Configuration(models.Model):
     NormalBalance = models.FloatField(default=0.0)
     HeroZeroBalance = models.FloatField(default=0.0)
 
+    BotStatus = models.BooleanField(default=False)
+
     # =============== FORCED EXIT =================
     ForcedExitWithoutSelling = models.BooleanField(default=False)
     ForcedExitWithSelling = models.BooleanField(default=False)
@@ -49,6 +50,10 @@ class Configuration(models.Model):
     class Meta:
         verbose_name = 'Configuration'
         verbose_name_plural = 'Configurations'
+
+    def get_config_obj():
+        return Configuration.objects.all().first()
+    
 
 class Order(models.Model):
     OrderSymbol = models.CharField(max_length=100)
@@ -63,6 +68,7 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
         ordering = ['-CreatedDate']
+
 
 class Transaction(models.Model):
     OrderObj = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -85,8 +91,8 @@ class Transaction(models.Model):
     
 class Strategy(models.Model):
     StrategyName = models.CharField(max_length=100)
-    StrategyCode = models.CharField(max_length=255)
-    StrategyDescription = models.TextFieldq(null=True, blank=True)
+    StrategyCode = models.CharField(max_length=255, unique=True)
+    StrategyDescription = models.TextField(null=True, blank=True)
 
     SL = models.FloatField()
     TGT = models.FloatField(null=True, blank=True)
@@ -106,3 +112,6 @@ class Strategy(models.Model):
         verbose_name = 'Strategy'
         verbose_name_plural = 'Strategies'
         ordering = ['-StrategyStatus']
+
+
+
