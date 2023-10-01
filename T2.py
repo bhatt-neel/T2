@@ -6,7 +6,6 @@ from telegram.ext import *
 from Telegram.handlers import *
 from Telegram.restarts import *
 
-
 if __name__ == '__main__':
 
     if not is_token_map_updated():
@@ -28,7 +27,6 @@ if __name__ == '__main__':
 
     dp.add_handler(MessageHandler(Filters.text, message_handler))
     dp.add_handler(MessageHandler(Filters.photo, photo_handler))
-
 
     updater.start_polling()
     print("Bot is ready to use!")

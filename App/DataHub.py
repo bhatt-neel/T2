@@ -27,7 +27,6 @@ def get_bot_status():
 def is_token_map_updated():
 
     try:
-        print("Checking Token Map")
         TokenMapPath = os.getcwd() + "/static/TokenMapCsv/"
         items_in_directory = os.listdir(TokenMapPath)
         files_in_directory = [item for item in items_in_directory if os.path.isfile(os.path.join(TokenMapPath, item))]
@@ -35,7 +34,6 @@ def is_token_map_updated():
         ExpectedFileName = TodaysDate + ".csv"
 
         if ExpectedFileName in files_in_directory:
-            print("Token Map is Updated")
             return True
         else:
             print("Token Map is not Updated")

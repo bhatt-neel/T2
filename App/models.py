@@ -19,9 +19,9 @@ class Configuration(models.Model):
     AngleOneClientPin = models.CharField(max_length=100)
 
     # =============== ANGLE ONE CODE CREDENTIALS =================
-    AngleOneAccessToken = models.CharField(max_length=100, null=True, blank=True)
-    AngleOneRefreshToken = models.CharField(max_length=100, null=True, blank=True)
-    AngleOneUserId = models.CharField(max_length=100, null=True, blank=True)
+    AngleOneAccessToken = models.CharField(max_length=2000, null=True, blank=True)
+    AngleOneRefreshToken = models.CharField(max_length=2000, null=True, blank=True)
+    AngleOneUserId = models.CharField(max_length=2000, null=True, blank=True)
     AngleOneFeedToken = models.CharField(max_length=100, null=True, blank=True)
 
     # =============== IMG-TO-TEXT =================
@@ -38,9 +38,13 @@ class Configuration(models.Model):
     CreatedDate = models.DateTimeField(auto_now_add=True)
     ModifiedDate = models.DateTimeField(auto_now=True)
 
+    ActiveStrategyCodeFor0T1 = models.CharField(max_length=100)
+    ActiveStrategyCodeFor0TAll = models.CharField(max_length=100)
     # =============== BALANECE =================
     NormalBalance = models.FloatField(default=0.0)
     HeroZeroBalance = models.FloatField(default=0.0)
+    HeroZeroStatus = models.BooleanField(default=False)
+
 
     BotStatus = models.BooleanField(default=False)
 
@@ -100,14 +104,8 @@ class Strategy(models.Model):
 
     SL = models.FloatField()
     TGT = models.FloatField(null=True, blank=True)
-    HalfQtyBookAt = models.FloatField(null=True, blank=True)
     TrailingMargin = models.FloatField(null=True, blank=True)
     TrailingStartAt = models.FloatField(null=True, blank=True)
-
-    LotCondition = models.IntegerField(null=True, blank=True)
-    LtpCondition = models.FloatField(null=True, blank=True)
-
-    StrategyStatus = models.BooleanField(default=False)
 
     def __str__(self):
         return self.StrategyName
@@ -115,7 +113,7 @@ class Strategy(models.Model):
     class Meta:
         verbose_name = 'Strategy'
         verbose_name_plural = 'Strategies'
-        ordering = ['-StrategyStatus']
+
 
 
 
