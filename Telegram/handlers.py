@@ -6,6 +6,7 @@ from Logic.Parser.txt_to_info import text_to_info
 from Logic.Parser.info_to_orderParm import Info_To_Order
 from Logic.AngelOne.helper import DecideStrategy
 import os
+import traceback
 
 
 def message_handler(update, context):
@@ -37,6 +38,7 @@ def message_handler(update, context):
     
     except Exception as e:
         print(f'ERROR MESSAGE FROM MESSAGE HANDLER :\n{e}')
+        traceback.print_tb(e.__traceback__)
         return False
 
 def photo_handler(update, context):
@@ -70,7 +72,8 @@ def photo_handler(update, context):
         return True
     
     except Exception as e:
-        print(f'\tMESSAGE FROM PHOTO_HANDLER RESULT : \n\t\t{e}')
+        print(f'MESSAGE FROM PHOTO_HANDLER RESULT : \n{e}')
+        traceback.print_tb(e.__traceback__)
         return False
 
 def status_handler(update, context):
