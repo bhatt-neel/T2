@@ -92,3 +92,40 @@ def hzStop(request):
 
     return redirect('homepage')
 
+def ExitAndSell(request):
+    try:
+        ConfigObj = get_config_obj()
+        ConfigObj.ForcedExitWithSelling = True
+        ConfigObj.save()
+        messages.success(request, 'Exit And Sell Executed Successfully !!')
+    
+    except Exception as e:
+        messages.error(request, 'Error While Executing Exit And Sell')
+
+    return redirect('homepage')
+
+def Exit(request):
+    try:
+        ConfigObj = get_config_obj()
+        ConfigObj.ForcedExitWithoutSelling = True
+        ConfigObj.save()
+        messages.success(request, 'Exit Executed Successfully !!')
+    
+    except Exception as e:
+        messages.error(request, 'Error While Executing Exit')
+
+    return redirect('homepage')
+    
+def IDEAL(request):
+    try:
+        ConfigObj = get_config_obj()
+        ConfigObj.ForcedExitWithoutSelling = False
+        ConfigObj.ForcedExitWithSelling = False
+        ConfigObj.save()
+        messages.success(request, 'Forced Settings Reset !!')
+    
+    except Exception as e:
+        messages.error(request, 'Forced Settings Reset Failed')
+
+    return redirect('homepage')
+

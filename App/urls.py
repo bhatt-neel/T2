@@ -11,6 +11,10 @@ urlpatterns = [
     path('hz-start/', hzStart, name="hzStart"),
     path('hz-stop/', hzStop, name="hzStart"),
     path('edit-configuration/', EditConfiguration, name="EditConfiguration"),
+    path('f-exit-and-sell/', ExitAndSell, name="EXITANDSELL"),
+    path('f-exit/', Exit, name="EXIT"),
+    path('ideal/', IDEAL, name="IDEAL"),
+    
     
 ]
 
