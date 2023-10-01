@@ -17,6 +17,13 @@ To set up the T2 Auto Trading system, follow these steps:
     cd T2
     ```
 
+    OR
+
+    ```bash
+    git clone https://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@github.com/bhatt-neel/T2.git
+    cd T2
+    ```
+
 2. **Set Up a Virtual Environment** (Optional but Recommended):
 
     ```bash
