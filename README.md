@@ -50,12 +50,17 @@ To set up the T2 Auto Trading system, follow these steps:
     ```bash
     python manage.py runserver
     ```
+2. Run T2.py File
 
-2. Open your browser and navigate to the provided link.
+    ```bash
+    python T2.py
+    ```
 
-3. Log in or register as a new user.
+3. Open your browser and navigate to the provided link.
 
-4. Set up your trading parameters and enjoy hassle-free trading!
+4. Log in or register as a new user.
+
+5. Set up your trading parameters and enjoy hassle-free trading!
 
 *... and so on.*
 
