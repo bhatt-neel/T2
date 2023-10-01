@@ -37,6 +37,7 @@ class Configuration(models.Model):
     # =============== DATE & TIME =================
     CreatedDate = models.DateTimeField(auto_now_add=True)
     ModifiedDate = models.DateTimeField(auto_now=True)
+    TokenUpdatedDate = models.DateTimeField(null=True, blank=True)
 
     ActiveStrategyCodeFor0T1 = models.CharField(max_length=100)
     ActiveStrategyCodeFor0TAll = models.CharField(max_length=100)

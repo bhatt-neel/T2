@@ -42,4 +42,3 @@ def is_token_map_updated():
     except:
         print("Error While Checking Token Map")
         return False
-    

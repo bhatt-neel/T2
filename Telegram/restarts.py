@@ -26,6 +26,7 @@ def UpdateTokenMap():
         confObj.AngleOneRefreshToken = OBJ.refresh_token
         confObj.AngleOneUserId = OBJ.feed_token
         confObj.AngleOneFeedToken = OBJ.userId
+        confObj.TokenUpdatedDate = datetime.datetime.now()
         confObj.save()
         print("Token Map Updated Successfully")
         return True

@@ -92,13 +92,26 @@ def tokenmap_handler(update, context):
 
 def restart_handler(update, context):
     update.message.reply_text("Restarting Bot...")
-    if UpdateTokenMap():
-        update.message.reply_text("Token Map Updated Successfully !!")
+    
+    ConfigObj = get_config_obj()
+    ConfigObj.BotStatus = True
+    ConfigObj.save()
+
+    if is_token_map_updated():
+        update.message.reply_text("Token Map is Updated!!")
         update.message.reply_text("Bot Restarted Successfully !!")
         update.message.reply_text("**Bot Status:** Online\nThe bot has been initiated! To stop it, please use the command `/stop`.",
                               parse_mode=ParseMode.MARKDOWN)
+
     else:
-        update.message.reply_text("Error While Updating Token Map")
+        result = UpdateTokenMap()
+        if result:
+            update.message.reply_text("Token Map Updated Successfully !!")
+            update.message.reply_text("Bot Restarted Successfully !!")
+            update.message.reply_text("**Bot Status:** Online\nThe bot has been initiated! To stop it, please use the command `/stop`.",
+                                parse_mode=ParseMode.MARKDOWN)
+        else:
+            update.message.reply_text("Error While Updating Token Map")
 
 def start_handler(update, context):
     if get_bot_status():
