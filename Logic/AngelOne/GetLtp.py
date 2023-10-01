@@ -2,7 +2,6 @@ from SmartApi import SmartConnect
 from App.DataHub import get_config_obj
 
 def getLTP(TOKEN, SYMBOL):
-    print(TOKEN, SYMBOL)
     configInfo = get_config_obj()
 
     obj=SmartConnect(
@@ -14,9 +13,7 @@ def getLTP(TOKEN, SYMBOL):
     )
 
     instrument_data = obj.ltpData('NFO', SYMBOL, TOKEN)
-    print(instrument_data)
     ltp = instrument_data['data']['ltp']
-    print(ltp)
     return ltp
 
 
