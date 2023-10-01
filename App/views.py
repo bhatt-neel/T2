@@ -10,7 +10,7 @@ from .FrontLogic import *
 from django.contrib import messages
 
 
-# @method_decorator(login_required(login_url='admin/'), name='dispatch')
+@method_decorator(login_required(login_url='admin/login/?next=/'), name='dispatch')
 class IndexPage(View):
     def get(self, request):
         data = {}
