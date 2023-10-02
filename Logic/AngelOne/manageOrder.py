@@ -1,5 +1,5 @@
 import math
-from .place_order import place_order
+from .place_order import place_order, fake_place_order
 from .GetLtp import getLTP
 from telegram import ParseMode
 from App.DataHub import *
@@ -59,11 +59,12 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         FourcedExitWithSelling = ConfigObj.ForcedExitWithSelling
         
         if FourcedExitWithoutSelling:
+            result = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
             print(f'Forced Exit Without Selling')
             update.message.reply_text(f'Forced Exit Without Selling Remaining all QTY')
             ConfigObj.ForcedExitWithoutSelling = False
             ConfigObj.save()
-            return True
+            return {'order': result}
 
         elif FourcedExitWithSelling:
             print(f'Forced Exit With Selling')
@@ -71,13 +72,15 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             update.message.reply_text(f'Forced Exit With Selling Remaining all QTY')
             ConfigObj.ForcedExitWithSelling = False
             ConfigObj.save()
-            return True
+            return {'order': result}
         else:
             pass
 
+
     except Exception as e:
+        result = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
         print(f'Error in ManageForcedExit : {e}')
-        return False
+        return {'order': result}
 
 def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, update):
         
