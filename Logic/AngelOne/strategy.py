@@ -134,7 +134,7 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             SellObj = Transaction(
                 OrderObj=orderObj,
                 TransactionSymbol=SYMBOL,
-                BuySell='BUY',
+                BuySell='SELL',
                 TransactionLotSize=LOTSIZE,
                 TransactionLot=TOTAL_LOT,
                 TriggerPrice=MSL['order']['TriggerPrice'],

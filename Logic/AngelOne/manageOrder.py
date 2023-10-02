@@ -80,7 +80,7 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             return result
         else:
             result['status'] = False
-            pass
+            return result
 
 
     except Exception as e:
@@ -100,6 +100,8 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
         time.sleep(0.2)
 
         ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update)
+
+        print(ForcedExit)
 
         if ForcedExit['status']:
             result['CarryForward'] = False
