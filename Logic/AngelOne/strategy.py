@@ -2,7 +2,7 @@ import math
 from .place_order import place_order
 from App.DataHub import *
 from .manageOrder import ManageSL, ManageTSL, ManageBUY
-
+from App.models import Transaction, Order, LiveDb
 
 def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     
@@ -11,6 +11,23 @@ def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SLTGT', update)
 
     if BUY['status']:
+        orderObj = Order(
+            OrderSymbol=SYMBOL,
+            OrderStatus=False,
+            StrategyCode='SLTGT'
+        )
+        orderObj.save()
+        BuyObj = Transaction(
+            OrderObj=orderObj,
+            TransactionSymbol=SYMBOL,
+            BuySell='BUY',
+            TransactionLotSize=TOTAL_LOT,
+            TransactionLot=TOTAL_LOT,
+            TriggerPrice=BUY['TriggerPrice'],
+            status=True
+        )
+        BuyObj.save()
+
         BUYINGPRICE = BUY['TriggerPrice']
         Result = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SLTGT', BUYINGPRICE, update)
 
@@ -18,9 +35,42 @@ def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         
         if Result['CarryForward']:
             order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=TOTAL_LOT,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=order['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
+
             print(f"SLTGT : 100% QTY BOOKED WITH TGT OF {StrategyConfig.TGT}%.")
             update.message.reply_text(f"SLTGT : 100% QTY BOOKED WITH TGT OF {StrategyConfig.TGT}%.")
         else:
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=TOTAL_LOT,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=Result['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"SLTGT : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
             update.message.reply_text(f"SLTGT : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
     else:
@@ -36,6 +86,22 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', update)
 
     if BUY['status']:
+        orderObj = Order(
+            OrderSymbol=SYMBOL,
+            OrderStatus=False,
+            StrategyCode='SLTGT'
+        )
+        orderObj.save()
+        BuyObj = Transaction(
+            OrderObj=orderObj,
+            TransactionSymbol=SYMBOL,
+            BuySell='BUY',
+            TransactionLotSize=LOTSIZE,
+            TransactionLot=TOTAL_LOT,
+            TriggerPrice=BUY['TriggerPrice'],
+            status=True
+        )
+        BuyObj.save()
         BUYINGPRICE = BUY['TriggerPrice']
 
         MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', BUYINGPRICE, update)
@@ -46,10 +112,40 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             print(f"TSLAP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
             update.message.reply_text(f"TSLAP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
             TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', BUYINGPRICE, update)
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=TSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"TSLAP : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
             update.message.reply_text(f"TSLAP : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
 
         else:
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='BUY',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=MSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"TSLAP : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
             update.message.reply_text(f"TSLAP : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
     else:
@@ -65,6 +161,22 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAPB', update)
 
     if BUY['status']:
+        orderObj = Order(
+            OrderSymbol=SYMBOL,
+            OrderStatus=False,
+            StrategyCode='SLTGT'
+        )
+        orderObj.save()
+        BuyObj = Transaction(
+            OrderObj=orderObj,
+            TransactionSymbol=SYMBOL,
+            BuySell='BUY',
+            TransactionLotSize=LOTSIZE,
+            TransactionLot=TOTAL_LOT,
+            TriggerPrice=BUY['TriggerPrice'],
+            status=True
+        )
+        BuyObj.save()
         BUYINGPRICE = BUY['TriggerPrice']
 
         LOT_TGT_1 = math.ceil(TOTAL_LOT/2)
@@ -76,13 +188,54 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
 
         if MSL['CarryForward']:
             order = place_order(TOKEN, SYMBOL, LOT_TGT_1, LOTSIZE, 'SELL')
+            Sell1Obj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=LOT_TGT_1,
+                TriggerPrice=order['TriggerPrice'],
+                status=True
+            )
+            Sell1Obj.save()
+            
             print(f"TSLAPB : 50% QTY BOOKED AT {StrategyConfig.TrailingStartAt}% OF TGT.")
             update.message.reply_text(f"TSLAPB : 50% QTY BOOKED AT {StrategyConfig.TrailingStartAt}% OF TGT.")
             TSL = ManageTSL(TOKEN, SYMBOL, LOT_TGT_2, LOTSIZE, 'TSLAPB', BUYINGPRICE, update)
+            Sell2Obj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=LOT_TGT_2,
+                TriggerPrice=TSL['order']['TriggerPrice'],
+                status=True
+            )
+            Sell2Obj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"TSLAPB : {StrategyConfig.TrailingMargin}% MARGIN OF TRAILING SL HIT.")
             update.message.reply_text(f"TSLAPB : {StrategyConfig.TrailingMargin}% MARGIN OF TRAILING SL HIT.")
 
         else:
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=MSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"TSLAPB : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
             update.message.reply_text(f"TSLAPB : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
     
@@ -99,6 +252,22 @@ def HEROZERO(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', update)
 
     if BUY['status']:
+        orderObj = Order(
+            OrderSymbol=SYMBOL,
+            OrderStatus=False,
+            StrategyCode='SLTGT'
+        )
+        orderObj.save()
+        BuyObj = Transaction(
+            OrderObj=orderObj,
+            TransactionSymbol=SYMBOL,
+            BuySell='BUY',
+            TransactionLotSize=LOTSIZE,
+            TransactionLot=TOTAL_LOT,
+            TriggerPrice=BUY['TriggerPrice'],
+            status=True
+        )
+        BuyObj.save()
         BUYINGPRICE = BUY['TriggerPrice']    
 
         MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', BUYINGPRICE, update)
@@ -109,10 +278,40 @@ def HEROZERO(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             print(f"HEROZERO : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
             update.message.reply_text(f"HEROZERO : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
             TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', BUYINGPRICE, update)
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=TSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"HEROZERO : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
             update.message.reply_text(f"HEROZERO : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
 
         else:
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=MSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
             print(f"HEROZERO : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
             update.message.reply_text(f"HEROZERO : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
 

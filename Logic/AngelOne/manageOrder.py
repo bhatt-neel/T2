@@ -3,6 +3,7 @@ from .place_order import place_order
 from .GetLtp import getLTP
 from telegram import ParseMode
 from App.DataHub import *
+from App.models import LiveDb
 import time
 import pytz
 
@@ -37,6 +38,18 @@ def DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE):
 
     else:
         return [False, 0, 0, 0]
+
+def UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP):
+    LiveDbObj = LiveDb.objects.all().first()
+    Qty = TOTAL_LOT*LOTSIZE
+    LiveDbObj.Strategy = StrategyCode
+    LiveDbObj.BUYINGPRICE = BUYINGPRICE
+    LiveDbObj.LTP = LTP
+    LiveDbObj.Returns = round(((LTP - BUYINGPRICE)/BUYINGPRICE*100), 2)
+    LiveDbObj.PNL = (LTP - BUYINGPRICE)*Qty
+    LiveDbObj.running = True
+    LiveDbObj.save()
+    return True
     
 def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
 
@@ -97,6 +110,8 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
                 result['CarryForward'] = True
                 print(f"BREAK EVEN POINT REACHED")
                 break
+
+        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP)
     
     return result
 
@@ -129,6 +144,8 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, upda
             result['order'] = order
             result['CarryForward'] = True
             break
+
+        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP)
     
     return result
 

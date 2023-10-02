@@ -14,8 +14,7 @@ urlpatterns = [
     path('f-exit-and-sell/', ExitAndSell, name="EXITANDSELL"),
     path('f-exit/', Exit, name="EXIT"),
     path('ideal/', IDEAL, name="IDEAL"),
-    
-    
+    path('api/fetch_orders/', fetch_orders, name='fetch_orders'),
 ]
 
 # if settings.DEBUG:

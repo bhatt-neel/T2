@@ -117,4 +117,13 @@ class Strategy(models.Model):
 
 
 
+class LiveDb(models.Model):
+    Strategy = models.CharField(max_length=100, null=True, blank=True)
+    BUYINGPRICE = models.FloatField(null=True, blank=True)
+    LTP = models.FloatField(null=True, blank=True)
+    Returns = models.FloatField(null=True, blank=True)
+    PNL = models.FloatField(null=True, blank=True)
+    running = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.Strategy

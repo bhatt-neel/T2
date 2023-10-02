@@ -7,7 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from .DataHub import *
 from .FrontLogic import *
+from .models import *
 from django.contrib import messages
+from templatetags.custom_filter import *
 
 
 @method_decorator(login_required(login_url='admin/login/?next=/'), name='dispatch')
@@ -18,6 +20,19 @@ class IndexPage(View):
         data['ConfObj'] = get_config_obj()
         data['TokenStatus'] = is_token_map_updated()
         data['Strategy'] = Strategy.objects.all()
+        data['TOrders'] = GetTodaysOrders()
+        data['TPnl'] = GetTodaysPnl()
+        data['Treturns'] = GetTodaysReturns()
+
+        if data['Treturns'] >= 0:
+            data['Profit'] = True
+            data['FilteredPnl'] = data['TPnl']
+            data['FilteredReturns'] = data['Treturns']
+        else:
+            data['Profit'] = False
+            data['FilteredPnl'] = -data['TPnl']
+            data['FilteredReturns'] = -data['Treturns']
+            
         return render(request, 'Pages/index.html', data)
     
     def post(self, request):
@@ -129,3 +144,7 @@ def IDEAL(request):
 
     return redirect('homepage')
 
+
+def fetch_orders(request):
+    order = LiveDb.objects.all().values('Strategy', 'BUYINGPRICE', 'LTP', 'Returns', 'PNL', 'running')
+    return JsonResponse(list(order), safe=False)

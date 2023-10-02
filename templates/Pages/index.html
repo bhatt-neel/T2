@@ -1,252 +1,460 @@
 {% extends 'Boiler/Base.html' %}
+{% load custom_filter %}
 {% load static %}
 {% block content %}
 
-
-    <div class="container mt-5">
-        
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+ <!-- Sidenav -->
+  <!-- Main content -->
+  <div class="main-content bg-dark" id="panel">
+    <!-- Topnav -->
+    <nav class="navbar navbar-top navbar-expand navbar-dark bg-dark border-bottom">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <!-- Search form -->
+          <!-- Navbar links -->
+          <a href="#" class="p-0 m-0 text-light font-weight-bold h2" style="letter-spacing: 2px;">T2</a>
+          <ul class="navbar-nav align-items-center ml-md-auto ">
+          </ul>
+          <ul class="navbar-nav align-items-center ml-auto ml-md-0 ">
+            <li class="nav-item dropdown">
+                <div class="media align-items-center">
+                  <div class="media-body  mr-2 d-none d-lg-block">
+                    <span class="mb-0 text-sm">Welcome, <span class="text-light">{{request.user.first_name}}</span></span>
+                  </div>
                 </div>
-            {% endfor %}
-        {% endif %}
+              </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Header -->
+    <!-- Header -->
     
+    <div class="header bg-dark pb-5">
+      <div class="container-fluid">
+        <div class="header-body">
+          <!-- Card stats -->
 
-        <div class="card">
+          <div class="row py-5">
 
-            <div class="card-header">
-
-              <b>T2 Configurations</b>
-
-              <span class="float-end">
-                {% if BotStatus %}
-                    <i class="fa fa-circle text-success" aria-hidden="true"></i>
-                {% else %}
-                    <i class="fa fa-circle text-danger" aria-hidden="true"></i>
-                {% endif %}
-              </span>
-
-            </div>
-            
-            <div class="card-body">
-
-                <div class="row">
-
-                        <div class="col-lg-3 mt-3">
-                            Name : {{ConfObj.ConfigurationName}}
-                        </div>
-
-                        <div class="col-lg-3 mt-3">
-                            Token Status :
-                            {% if TokenStatus %}
-                                <i class="fa fa-check-circle-o text-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Updated : {{ConfObj.TokenUpdatedDate}}"></i>
-                            {% else %}
-                                <i class="fa fa-times-circle text-danger" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Last Updated : {{ConfObj.TokenUpdatedDate}}"></i>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-lg-3 mt-3">
-                            Balance : {{ConfObj.NormalBalance}}
-                        </div>
-
-                        <div class="col-lg-3 mt-3">
-                            HZ Balance : {{ConfObj.HeroZeroBalance}}
-                        </div>
-
-                </div>
-
-                <div class="row mb-3">
-
-                        <div class="col-lg-3  mt-3">
-                            HZ Status :
-                            {% if ConfObj.HeroZeroStatus %}
-                                <i class="fa fa-check-circle-o text-success"></i>
-                            {% else %}
-                                <i class="fa fa-times-circle text-danger"></i>
-                            {% endif %}
-                        </div>
-                        <div class="col-lg-3  mt-3">
-                            Strategy (Lot GT 2) : 
-                            {{ConfObj.ActiveStrategyCodeFor0T1}}
-                        </div>
-
-                        <div class="col-lg-3  mt-3">
-                            Strategy (Lot LT= 2) : 
-                            {{ConfObj.ActiveStrategyCodeFor0TAll}}
-                        </div>
-
-                        <div class="col-lg-3  mt-3">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#ConfigureModel">Edit Configuration</a>
-                        </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Configuration Modal -->
-        <div class="modal fade" id="ConfigureModel" tabindex="-1" aria-labelledby="ConfigureModelLabel" aria-hidden="true">
-            
-            <div class="modal-dialog">
-
-                <div class="modal-content">
-
-                    <form method="post">
-                        
-                        {% csrf_token %}
-
-                        <input type="hidden" name="Configuration" value="1">
-
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Edit Configuration</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <label class="form-label">Configuration Name</label>
-                                    <input type="text" class="form-control" name="ConfigurationName" value="{{ConfObj.ConfigurationName}}">
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="form-label mt-3">Strategy ( 1 Lot )</label>
-                                    <input type="text" class="form-control" name="ActiveStrategyCodeFor0T1" value="{{ConfObj.ActiveStrategyCodeFor0T1}}">
-                                </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label mt-3">Strategy ( 2 - inf )</label>
-                                    <input type="text" class="form-control" name="ActiveStrategyCodeFor0TAll" value="{{ConfObj.ActiveStrategyCodeFor0TAll}}">
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="form-label mt-3">Normal Balance</label>
-                                    <input type="text" class="form-control" name="NormalBalance" value="{{ConfObj.NormalBalance}}">
-                                </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label mt-3">HERO-ZERO Balance</label>
-                                    <input type="text" class="form-control" name="HeroZeroBalance" value="{{ConfObj.HeroZeroBalance}}">
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                        </div>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="row">
-            {% for i in Strategy %}
-            <div class="col-lg-4">
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ i.StrategyCode }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ i.StrategyName }}</h6>
-                        <p class="card-text">{{ i.StrategyDescription }}</p>
-                        
-                        <span><b>SL : {{i.SL}}%</b> | <b>TGT : {{i.TGT}}%</b></span><br>
-                        <span><b>TM : {{i.TrailingMargin}}%</b> | <b>BreakEven : {{i.TrailingStartAt}}%</b></span><br>
+            <div class="col-xl-3 col-md-12">
+              <div class="card card-stats bg-dark">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Bot Status</h5>
                     </div>
-                    <div class="card-footer">
-                        <a href="" data-bs-toggle="modal" data-bs-target="#StrategyModel_{{ i.StrategyCode }}">Edit</a>
-                    </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-sm">
+                    {% if BotStatus %}
+                    <span class="text-success mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap text-success">Online</span>
+                    <a href="stopBot" class="float-right">Turn Off</a>
+                    {% else %}
+                    <span class="mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap">Offline</span>
+                    <a href="startBot/" class="float-right">Turn On</a>
+                    {% endif %}
+                  </p>
                 </div>
+              </div>
             </div>
 
-            <!-- Strategy Modal -->
-            <div class="modal fade" id="StrategyModel_{{ i.StrategyCode }}" tabindex="-1" aria-labelledby="StrategyModel_{{ i.StrategyCode }}Label" aria-hidden="true">
-                
-                <div class="modal-dialog">
-
-                    <div class="modal-content">
-
-                        <form method="post">
-                            
-                            {% csrf_token %}
-
-                            <input type="hidden" name="Configuration" value="2">
-                            <input type="hidden" name="strategyCode" value="{{ i.StrategyCode }}">
-
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">{{i.StrategyCode}}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-
-
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <label class="form-label">Strategy Name</label>
-                                        <input type="text" class="form-control" name="StrategyName" value="{{i.StrategyName}}">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <label class="form-label mt-3">StopLoss</label>
-                                        <input type="text" class="form-control" name="SL" value="{{i.SL}}">
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label class="form-label mt-3">Target</label>
-                                        <input type="text" class="form-control" name="TGT" value="{{i.TGT}}">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <label class="form-label mt-3">Trailing Margin</label>
-                                        <input type="text" class="form-control" name="TrailingMargin" value="{{i.TrailingMargin}}">
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label class="form-label mt-3">Trailing StartAt</label>
-                                        <input type="text" class="form-control" name="TrailingStartAt" value="{{i.TrailingStartAt}}">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <label class="form-label mt-3">Description</label>
-                                        <textarea name="StrategyDescription" rows="5" class="form-control">{{i.StrategyDescription}}</textarea>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                            </div>
-
-                        </form>
-
+            <div class="col-xl-3 col-md-12">
+              <div class="card card-stats bg-dark">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Token Status</h5>
                     </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-sm">
+                    {% if TokenStatus %}
+                    <span class="text-success mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap text-success">Updated</span>
+                    <a href="restartBot/" class="float-right">Refresh</a>
+                    {% else %}
+                    <span class="mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap">Expired</span>
+                    <a href="restartBot/" class="float-right">Refresh</a>
+                    {% endif %}
 
+                  </p>
                 </div>
-
+              </div>
             </div>
 
-            {% endfor %}
+            <div class="col-xl-3 col-md-12">
+              <div class="card card-stats bg-dark">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Hero Zero</h5>
+                    </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-sm">
+                    {% if ConfObj.HeroZeroStatus %}
+                    <span class="text-success mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap text-success">Enabled</span>
+                    <a href="hz-stop/" class="float-right">Disable</a>
+                    {% else %}
+                    <span class="mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap">Disabled</span>
+                    <a href="hz-start/" class="float-right">Enable</a>
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 col-md-12">
+              <div class="card card-stats bg-dark">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Forced Exit </h5>
+                      <div id="bookList"></div>
+                    </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-sm">
+                    {% if ConfObj.ForcedExitWithoutSelling or ConfObj.ForcedExitWithSelling %}
+                    <span class="text-success mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap text-success">Active</span>
+                    <a href="ideal/" class="float-right">Reset</a>
+                    {% else %}
+                    <span class="mr-2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <span class="text-nowrap">Disabled</span>
+                    <a href="f-exit/" class="float-right">Exit</a>
+                    <span class="float-right mx-2">|</span>
+                    <a href="f-exit-and-sell/" class="float-right">Exit & Sell</a>
+                    {% endif %}
+
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-        
-    
+      </div>
     </div>
+    <!-- Page content -->
+    <div class="container-fluid mt--6">
+
+      <div class="row">
+
+        <div class="col-xl-3">
+          <div class="row">
+
+            <div class="col-xl-12">
+              <div class="card">
+                <div class="card-header border-0 bg-dark">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h3 class="mb-0 text-light">Live Trade</h3>
+                    </div>
+    
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <!-- Projects table -->
+                  <table class="table align-items-center table-flush bg-dark table-borderless">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col" class="text-light">Key</th>
+                        <th scope="col" class="text-light">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-light">
+                      <tr>
+                        <td>Strategy</td>
+                        <td id="strategy">None</td>
+                      </tr>
+                      <tr>
+                        <td>BUYING PRICE</td>
+                        <td id="bp">0</td>
+                      </tr>
+                      <tr>
+                        <td>LTP</td>
+                        <td id="ltp">0</td>
+                      </tr>
+                      <tr>
+                        <td>Returns</td>
+                        <td class="text-success" id="returns"> 
+                          + 0 %
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>PNL</td>
+                        <td class="text-success" id="pnl"> 
+                          + 0
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-12">
+              <div class="card">
+                <div class="card-header border-0 bg-dark">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h3 class="mb-0 text-light" style="letter-spacing: 1px;">Configuration</h3>
+                    </div>
+
+                    <div class="col text-right">
+                      <a href="/admin/App/configuration/1/change/" class="btn btn-sm btn-primary">Edit</a>
+                    </div>
+    
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <!-- Projects table -->
+                  <table class="table align-items-center table-flush bg-dark table-borderless">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col" class="text-light">Key</th>
+                        <th scope="col" class="text-light">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-light">
+
+                      <tr>
+                        <td>Configuration Name</td>
+                        <td>{{ConfObj.ConfigurationName}}</td>
+                      </tr>
+
+                      <tr>
+                        <td>Lot = 1</td>
+                        <td>{{ConfObj.ActiveStrategyCodeFor0T1}}</td>
+                      </tr>
+
+                      <tr>
+                        <td>Lot >= 2</td>
+                        <td>{{ConfObj.ActiveStrategyCodeFor0TAll}}</td>
+                      </tr>
+
+                      <tr>
+                        <td>Normal Balance</td>
+                        <td>{{ConfObj.NormalBalance}}</td>
+                      </tr>
+
+                      <tr>
+                        <td>Hero Zero Balance</td>
+                        <td>{{ConfObj.HeroZeroBalance}}</td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
 
 
-{% endblock %}
+            <div class="col-xl-12">
+              <div class="card">
+                <div class="card-header border-0 bg-dark">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h3 class="mb-0 text-light" style="letter-spacing: 1px;">Strategies</h3>
+                    </div>
+    
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <!-- Projects table -->
+                  <table class="table align-items-center table-flush bg-dark table-borderless">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col" class="text-light">Strategy</th>
+                        <th scope="col" class="text-light">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-light">
+
+                      {% for i in Strategy %}
+                      <tr>
+                        <td>{{i.StrategyCode}}</td>
+                        <td><a href="/admin/App/strategy/{{i.id}}/change/">Edit</a></td>
+                      </tr>
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-xl-9">
+          <div class="card bg-dark">
+            <div class="card-header border-0 bg-dark">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0 text-light">Orders</h3>
+                </div>
+                  {% if Profit %}
+                    <div class="col text-right text-success" id="totalRoot">
+                      <span id="TotalIndi">+</span> <span id="totalPnl">{{FilteredPnl}}</span>
+                    </div>
+                  {% else %}
+                    <div class="col text-right text-danger" id="totalRoot">
+                      <span id="TotalIndi">-</span> <span id="totalPnl">{{FilteredPnl}}</span>
+                    </div>
+                  {% endif %}
+              </div>
+            </div>
+            <div class="table-responsive">
+              <!-- Projects table -->
+              <table class="table align-items-center table-flush table-borderless">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col" class="text-light">Symbol</th>
+                    <th scope="col" class="text-light">Lot</th>
+                    <th scope="col" class="text-light">Lot Size</th>
+                    <th scope="col" class="text-light">QTY</th>
+                    <th scope="col" class="text-light">Trigg Price</th>
+                    <th scope="col" class="text-light">Total</th>
+                    <th scope="col" class="text-light">BUY / SELL</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  {% for order in TOrders %}
+                    {% for transaction in order|GetTransactionFromOrder %}
+                      <tr class="text-light">
+                        <td>{{transaction.TransactionSymbol}}</td>
+                        <td>{{transaction.TransactionLot}}</td>
+                        <td>{{transaction.TransactionLotSize}}</td>
+                        <td>{{transaction.TransactionLotSize|multiply:transaction.TransactionLot}}</td>
+                        <td>{{transaction.TriggerPrice}}</td>
+                        <td>{{transaction.TransactionLotSize|multiply:transaction.TransactionLot|multiply:transaction.TriggerPrice}}</td>
+                        <td>{{transaction.BuySell}}</td>
+                      </tr>
+                    {% endfor %}
+
+                  <tr>
+                      {% if order|GetOrderPnl < 0 %}
+                        <td colspan="7" class="text-center text-danger">
+                          <i class="fa fa-arrow-down mr-2" aria-hidden="true"></i> {{order|GetOrderPnl}}
+                        </td>
+                      {% else %}
+                        <td colspan="7" class="text-center text-success">
+                          <i class="fa fa-arrow-up mr-2" aria-hidden="true"></i> + {{order|GetOrderPnl}}
+                        </td>
+                      {% endif %}
+
+                  {% endfor %}
+
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- Footer -->
+      <footer class="footer pt-0 bg-dark">
+        <div class="row align-items-center justify-content-lg-between">
+          <div class="col-lg-12">
+            <div class="copyright text-center  text-lg-right  text-muted">
+              &copy; 2023 <a href="#" class="font-weight-bold mx-1" target="_blank">T2</a> BY NEEL BHATT
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+
+  <script>
+
+    TotalProfit = document.getElementById('totalPnl').innerHTML;
+    PluMinus = document.getElementById('TotalIndi').innerHTML;
+      
+      function fetchData(TotalProfit, PluMinus) {
+          fetch('/api/fetch_orders/')
+              .then(response => response.json())
+              .then(data => {
+                  data = data[0]
+                  console.log(data)
+                  strategy = data['Strategy']
+                  buyingPrice = data['BUYINGPRICE']
+                  ltp = data['LTP']
+                  returns = data['Returns']
+                  pnl = data['PNL']
+
+                  if (data['running']){
+
+
+                    document.getElementById('strategy').innerHTML = strategy;
+                    document.getElementById('bp').innerHTML = buyingPrice;
+                    document.getElementById('ltp').innerHTML = ltp;
+                    
+
+                    if ((returns < 0) || (pnl < 0)) {
+                        document.getElementById('pnl').classList.add('text-danger');
+                        document.getElementById('pnl').classList.remove('text-success');
+                        document.getElementById('returns').classList.add('text-danger');
+                        document.getElementById('returns').classList.remove('text-success');
+                        document.getElementById('returns').innerHTML = '- '+ -returns;
+                        document.getElementById('pnl').innerHTML = '- '+ -pnl;
+                    } else {
+                        document.getElementById('pnl').classList.add('text-success');
+                        document.getElementById('pnl').classList.remove('text-danger');
+                        document.getElementById('returns').classList.add('text-success');
+                        document.getElementById('returns').classList.remove('text-danger'); 
+                        document.getElementById('returns').innerHTML = '+ '+ returns;
+                        document.getElementById('pnl').innerHTML = '+ '+ pnl;       
+                    }
+
+                    if (PluMinus == '+') {
+                      InitialNumber = parseInt(TotalProfit)
+                      FinalNumber = InitialNumber + pnl
+                      console.log(InitialNumber, pnl, FinalNumber, 1)
+                      if (FinalNumber < 0) {
+                        document.getElementById('totalPnl').innerHTML = -FinalNumber;  
+                        document.getElementById('TotalIndi').innerHTML = '-';
+                        document.getElementById('totalRoot').classList.add('text-danger');
+                        document.getElementById('totalRoot').classList.remove('text-success');
+                      } else {
+                        document.getElementById('totalPnl').innerHTML = FinalNumber;  
+                        document.getElementById('TotalIndi').innerHTML = '+';
+                        document.getElementById('totalRoot').classList.add('text-success');
+                        document.getElementById('totalRoot').classList.remove('text-danger');
+                      }
+                    } else {
+                      InitialNumber = -parseInt(TotalProfit)
+                      FinalNumber = InitialNumber + pnl
+                      console.log(InitialNumber, pnl, FinalNumber, 2)
+                      if (FinalNumber < 0) {
+                        document.getElementById('totalPnl').innerHTML = -FinalNumber;  
+                        document.getElementById('TotalIndi').innerHTML = '-';
+                        document.getElementById('totalRoot').classList.add('text-danger');
+                        document.getElementById('totalRoot').classList.remove('text-success');
+                      } else {
+                        document.getElementById('totalPnl').innerHTML = FinalNumber;  
+                        document.getElementById('TotalIndi').innerHTML = '+';
+                        document.getElementById('totalRoot').classList.add('text-success');
+                        document.getElementById('totalRoot').classList.remove('text-danger');
+                      }
+                    }
+
+                  }
+
+              });
+      }
+
+      // Poll every second
+      // setInterval(fetchData(TotalProfit, PluMinus), 1000);
+      setInterval(() => fetchData(TotalProfit, PluMinus), 1000);
+
+
+  </script>
+
+  {% endblock %}

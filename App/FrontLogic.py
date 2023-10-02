@@ -7,18 +7,14 @@ def restart_bot():
     ConfigObj.BotStatus = True
     ConfigObj.save()
 
-    if is_token_map_updated():
-        print("Token Map is Updated!!")
+    result = UpdateTokenMap()
+
+    if result:
+        print("Token Map Updated Successfully !!")
         return True
-    
     else:
-        result = UpdateTokenMap()
-        if result:
-            print("Token Map Updated Successfully !!")
-            return True
-        else:
-            print("Error While Updating Token Map")
-            return False
+        print("Error While Updating Token Map")
+        return False
     
 
 def EditConfiguration(request):
