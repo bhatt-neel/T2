@@ -54,33 +54,41 @@ def UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP):
 def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
 
     try:
+        result = {}
         ConfigObj = get_config_obj()
         FourcedExitWithoutSelling = ConfigObj.ForcedExitWithoutSelling
         FourcedExitWithSelling = ConfigObj.ForcedExitWithSelling
         
         if FourcedExitWithoutSelling:
-            result = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            order = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            result['order'] = order
+            result['status'] = True
             print(f'Forced Exit Without Selling')
             update.message.reply_text(f'Forced Exit Without Selling Remaining all QTY')
             ConfigObj.ForcedExitWithoutSelling = False
             ConfigObj.save()
-            return {'order': result}
+            return result
 
         elif FourcedExitWithSelling:
             print(f'Forced Exit With Selling')
-            result = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            result['order'] = order
+            result['status'] = True
             update.message.reply_text(f'Forced Exit With Selling Remaining all QTY')
             ConfigObj.ForcedExitWithSelling = False
             ConfigObj.save()
-            return {'order': result}
+            return result
         else:
             pass
 
 
     except Exception as e:
-        result = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+        result = {}
+        order = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+        result['order'] = order
+        result['status'] = True
         print(f'Error in ManageForcedExit : {e}')
-        return {'order': result}
+        return result
 
 def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, update):
         
@@ -92,8 +100,9 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
 
         ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update)
 
-        if ForcedExit:
+        if ForcedExit['status']:
             result['CarryForward'] = False
+            result['order'] = ForcedExit['order']
             break
             
         STATUS, SL, BreakAt, Margin = DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE)
@@ -129,8 +138,9 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, upda
 
         ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update)
 
-        if ForcedExit:
+        if ForcedExit['status']:
             result['CarryForward'] = False
+            result['order'] = ForcedExit['order']
             break
             
         LTP = getLTP(TOKEN, SYMBOL)
