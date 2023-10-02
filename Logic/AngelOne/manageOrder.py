@@ -79,6 +79,7 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             ConfigObj.save()
             return result
         else:
+            result['status'] = False
             pass
 
 
