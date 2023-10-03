@@ -35,6 +35,30 @@ class IndexPage(View):
             
         return render(request, 'Pages/index.html', data)
     
+    
+@method_decorator(login_required(login_url='admin/login/?next=/'), name='dispatch')
+class MobileIndexPage(View):
+    def get(self, request):
+        data = {}
+        data['BotStatus'] = get_bot_status()
+        data['ConfObj'] = get_config_obj()
+        data['TokenStatus'] = is_token_map_updated()
+        data['Strategy'] = Strategy.objects.all()
+        data['TOrders'] = GetTodaysOrders()
+        data['TPnl'] = GetTodaysPnl()
+        data['Treturns'] = GetTodaysReturns()
+
+        if data['Treturns'] >= 0:
+            data['Profit'] = True
+            data['FilteredPnl'] = data['TPnl']
+            data['FilteredReturns'] = data['Treturns']
+        else:
+            data['Profit'] = False
+            data['FilteredPnl'] = -data['TPnl']
+            data['FilteredReturns'] = -data['Treturns']
+            
+        return render(request, 'Pages/index2.html', data)
+    
     def post(self, request):
 
         if request.POST['Configuration'] == '1':

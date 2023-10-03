@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', IndexPage.as_view(), name="homepage"),
+    path('mobile/', MobileIndexPage.as_view(), name="mobile-home"),
     path('restartBot/', restartBot, name="restartBot"),
     path('startBot/', startBot, name="startBot"),
     path('stopBot/', stopBot, name="stopBot"),
