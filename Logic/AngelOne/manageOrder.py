@@ -12,7 +12,7 @@ def DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE):
     if StrategyCode == 'SLTGT':
         StrategyConfig = get_strategy_by_code('SLTGT')
         SL = BUYINGPRICE*(1 - (StrategyConfig.SL/100))
-        TGT_OR_BREAK_EVEN = BUYINGPRICE*(1 + (StrategyConfig.SL/100))
+        TGT_OR_BREAK_EVEN = BUYINGPRICE*(1 + (StrategyConfig.TGT/100))
         return [True, SL, TGT_OR_BREAK_EVEN, 0]
     
     elif StrategyCode == 'TSLAP':

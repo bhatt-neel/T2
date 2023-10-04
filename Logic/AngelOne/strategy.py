@@ -179,7 +179,7 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         BuyObj.save()
         BUYINGPRICE = BUY['TriggerPrice']
 
-        LOT_TGT_1 = math.ceil(TOTAL_LOT/2)
+        LOT_TGT_1 = math.ceil(TOTAL_LOT*0.70)
         LOT_TGT_2 = TOTAL_LOT - LOT_TGT_1
 
         MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAPB', BUYINGPRICE, update)

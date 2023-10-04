@@ -63,7 +63,6 @@ class Configuration(models.Model):
     def get_config_obj():
         return Configuration.objects.all().first()
     
-
 class Order(models.Model):
     OrderSymbol = models.CharField(max_length=100)
     OrderStatus = models.BooleanField(default=False)
@@ -77,7 +76,6 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
         ordering = ['-CreatedDate']
-
 
 class Transaction(models.Model):
     OrderObj = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -114,8 +112,6 @@ class Strategy(models.Model):
     class Meta:
         verbose_name = 'Strategy'
         verbose_name_plural = 'Strategies'
-
-
 
 class LiveDb(models.Model):
     Strategy = models.CharField(max_length=100, null=True, blank=True)
