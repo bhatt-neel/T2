@@ -170,5 +170,5 @@ def IDEAL(request):
 
 
 def fetch_orders(request):
-    order = LiveDb.objects.all().values('Strategy', 'BUYINGPRICE', 'LTP', 'Returns', 'PNL', 'running')
+    order = LiveDb.objects.all().values('Strategy', 'BUYINGPRICE', 'LTP', 'Returns', 'PNL', 'SL', 'running')
     return JsonResponse(list(order), safe=False)

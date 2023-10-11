@@ -1,7 +1,7 @@
 {% extends 'Boiler/Base.html' %}
 {% load custom_filter %}
 {% load static %}
-{% block content %}
+{% block content %} 
 
  <!-- Sidenav -->
   <!-- Main content -->
@@ -177,6 +177,10 @@
                       <tr>
                         <td>LTP</td>
                         <td id="ltp">0</td>
+                      </tr>
+                      <tr>
+                        <td>SL</td>
+                        <td id="sl">0</td>
                       </tr>
                       <tr>
                         <td>Returns</td>
@@ -388,6 +392,7 @@
                   ltp = data['LTP']
                   returns = data['Returns']
                   pnl = data['PNL']
+                  sl = data['SL']
 
                   if (data['running']){
 
@@ -395,6 +400,7 @@
                     document.getElementById('strategy').innerHTML = strategy;
                     document.getElementById('bp').innerHTML = buyingPrice;
                     document.getElementById('ltp').innerHTML = ltp;
+                    document.getElementById('sl').innerHTML = sl;
                     
 
                     if ((returns < 0) || (pnl < 0)) {

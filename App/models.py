@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -119,7 +120,16 @@ class LiveDb(models.Model):
     LTP = models.FloatField(null=True, blank=True)
     Returns = models.FloatField(null=True, blank=True)
     PNL = models.FloatField(null=True, blank=True)
+    SL = models.FloatField(null=True, blank=True)
     running = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        self.BUYINGPRICE = round(self.BUYINGPRICE, 2)
+        self.LTP = round(self.LTP, 2)
+        self.Returns = round(self.Returns, 2)
+        self.PNL = round(self.PNL, 2)
+        self.SL = round(self.SL, 2)
+        super(LiveDb, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.Strategy

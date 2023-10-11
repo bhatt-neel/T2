@@ -39,7 +39,7 @@ def DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE):
     else:
         return [False, 0, 0, 0]
 
-def UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP):
+def UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP, SL):
     LiveDbObj = LiveDb.objects.all().first()
     Qty = TOTAL_LOT*LOTSIZE
     LiveDbObj.Strategy = StrategyCode
@@ -48,6 +48,7 @@ def UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP):
     LiveDbObj.Returns = round(((LTP - BUYINGPRICE)/BUYINGPRICE*100), 2)
     LiveDbObj.PNL = (LTP - BUYINGPRICE)*Qty
     LiveDbObj.running = True
+    LiveDbObj.SL = SL
     LiveDbObj.save()
     return True
     
@@ -126,7 +127,7 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
                 print(f"BREAK EVEN POINT REACHED")
                 break
 
-        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP)
+        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP, SL)
     
     return result
 
@@ -161,7 +162,7 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, upda
             result['CarryForward'] = True
             break
 
-        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP)
+        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP, TrailingSL)
     
     return result
 
