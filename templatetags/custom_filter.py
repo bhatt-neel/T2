@@ -20,7 +20,7 @@ def GetOrderPnl(OrderObj):
         pnl = sell - buy
     else:
         pnl = 0
-    return pnl
+    return round(pnl, 2)
 
 @register.filter(name="GetOrderReturns")
 def GetOrderReturns(OrderObj):
@@ -40,7 +40,7 @@ def GetOrderReturns(OrderObj):
     else:
         returns = 0
 
-    return returns
+    return round(returns, 2)
 
 @register.filter(name="GetTransactionFromOrder")
 def GetTransactionFromOrder(OrderObj):
@@ -64,7 +64,8 @@ def GetTodaysPnl():
     pnl = 0
     for i in Orders:
         pnl = pnl + GetOrderPnl(i)
-    return pnl
+    
+    return round(pnl, 2)
 
 @register.filter(name="GetTodaysReturns")
 def GetTodaysReturns():
@@ -74,8 +75,8 @@ def GetTodaysReturns():
     for i in Orders:
         pnl = pnl + GetOrderPnl(i)
     returns = pnl/100000*100
-    return returns
+    return round(returns, 2)
 
 @register.filter(name="multiply")
 def multiply(n1, n2):
-    return n1*n2
+    return round(n1*n2, 2)
