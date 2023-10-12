@@ -60,7 +60,7 @@ def DecideStrategy(JsonOrderParm, update):
                 Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, update)
                 
         
-        elif LOT >= 4:
+        elif LOT >= 2:
 
             if LTP <= 16:
                 if ConfigObj.HeroZeroStatus:
