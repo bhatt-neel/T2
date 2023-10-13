@@ -13,27 +13,45 @@ def RiskManagment(AffordableLot):
         return True
     
 
-def getAffordableLotSize(TOKEN, SYMBOL, LOTSIZE, WalletBalance):
-    ltp = getLTP(TOKEN, SYMBOL)
+def getAffordableLotSize(EXCHANGE, TOKEN, SYMBOL, LOTSIZE, WalletBalance):
+    ltp = getLTP(EXCHANGE, TOKEN, SYMBOL)
     AffordableLot = math.floor(int(WalletBalance / (ltp * LOTSIZE)))
     return AffordableLot
 
 
 def getTokenInfo(SYMBOL, CEPE, SP):
-    exch_seg = 'NFO'
-    instrumenttype = 'OPTIDX'
+
+    if SYMBOL == 'SENSEX':
+        exch_seg = 'BFO'
+        instrumenttype = 'OPTIDX'
+
+    elif SYMBOL == 'CRUDEOIL':
+        exch_seg = 'MCX'
+        instrumenttype = 'OPTFUT'
+    else:
+        instrumenttype = 'OPTIDX'
+        exch_seg = 'NFO'
+
     FolderPath = os.getcwd() + "/static/TokenMapCsv/"
     TokenMapPath = f"{FolderPath}{datetime.datetime.now().strftime('%Y-%m-%d')}.csv"
     df = pd.read_csv(TokenMapPath, low_memory=False)
     SP = SP*100
 
+
     if exch_seg == 'NSE':
         eq_df = df[(df['exch_seg'] == 'NSE') & (df['symbol'].str.contains('EQ')) ]
         return eq_df[eq_df['name'] == SYMBOL]
+    
     elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
         return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == SYMBOL)].sort_values(by=['expiry'])
     elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
         return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == SYMBOL) & (df['strike'] == SP) & (df['symbol'].str.endswith(CEPE))].sort_values(by=['expiry'])
+    
+    elif exch_seg == 'BFO':
+        return df[(df['exch_seg'] == 'BFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == SYMBOL) & (df['strike'] == SP) & (df['symbol'].str.endswith(CEPE))].sort_values(by=['expiry'])
+    
+    elif exch_seg == 'MCX' and (instrumenttype == 'OPTFUT'):
+        return df[(df['exch_seg'] == 'MCX') & (df['instrumenttype'] == instrumenttype) & (df['name'] == SYMBOL) & (df['strike'] == SP) & (df['symbol'].str.endswith(CEPE))].sort_values(by=['expiry'])
 
 
 def DecideStrategy(JsonOrderParm, update):
@@ -45,6 +63,7 @@ def DecideStrategy(JsonOrderParm, update):
         LOT = JsonOrderParm['LOT']
         LOTSIZE = JsonOrderParm['LotSize']
         LTP = JsonOrderParm['ltp']
+        EXCHANGE = JsonOrderParm['exchange']
         ConfigObj = get_config_obj()
 
         print("DecideStrategy : INFORMATION EXTRACTED SUCCESSFULLY!")
@@ -53,11 +72,11 @@ def DecideStrategy(JsonOrderParm, update):
             
             if ConfigObj.ActiveStrategyCodeFor0T1 == 'TSLAP':
                 print("DecideStrategy : MOVING FORWARD WITH TSLAP")
-                Strategy = TSLAP(TOKEN, SYMBOL, LOT, LOTSIZE, update)
+                Strategy = TSLAP(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
 
             elif ConfigObj.ActiveStrategyCodeFor0T1 == 'SLTGT':
                 print("DecideStrategy : MOVING FORWARD WITH SLTGT")
-                Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, update)
+                Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
                 
         
         elif LOT >= 2:
@@ -65,7 +84,7 @@ def DecideStrategy(JsonOrderParm, update):
             if LTP <= 16:
                 if ConfigObj.HeroZeroStatus:
                     print("DecideStrategy : MOVING FORWARD WITH SL_TEN_TGT_TRAIL_WITH_HERO_ZERO")
-                    Strategy = HEROZERO(TOKEN, SYMBOL, LOT, LOTSIZE, update)
+                    Strategy = HEROZERO(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
                 else:
                     print("DecideStrategy : Avoiding This HeroZero No More Greediness")
                     update.message.reply_text("DecideStrategy : Avoiding This HeroZero No More Greediness")
@@ -74,15 +93,15 @@ def DecideStrategy(JsonOrderParm, update):
             else:
                 if ConfigObj.ActiveStrategyCodeFor0TAll == 'TSLAP':
                     print("DecideStrategy : MOVING FORWARD WITH TSLAP")
-                    Strategy = TSLAP(TOKEN, SYMBOL, LOT, LOTSIZE, update)
+                    Strategy = TSLAP(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
 
                 elif ConfigObj.ActiveStrategyCodeFor0TAll == 'TSLAPB':
                     print("DecideStrategy : MOVING FORWARD WITH TSLAPB")
-                    Strategy = TSLAPB(TOKEN, SYMBOL, LOT, LOTSIZE, update)
+                    Strategy = TSLAPB(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
 
                 elif ConfigObj.ActiveStrategyCodeFor0TAll == 'SLTGT':
                     print("DecideStrategy : MOVING FORWARD WITH SLTGT")
-                    Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, update)
+                    Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
         else:
             print("DecideStrategy : Wallet Balance is Too Low To Buy This Order")
             update.message.reply_text("DecideStrategy : Wallet Balance is Too Low To Buy This Order")

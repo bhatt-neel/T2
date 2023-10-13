@@ -5,7 +5,7 @@ from App.DataHub import *
 from SmartApi import SmartConnect
 
 
-def place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
+def place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL, EXCHANGE):
     
     configInfo = get_config_obj()
 
@@ -24,7 +24,7 @@ def place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
             "tradingsymbol": SYMBOL,
             "symboltoken": TOKEN,
             "transactiontype": BUYSELL,
-            "exchange": 'NFO',
+            "exchange": EXCHANGE,
             "ordertype": 'MARKET',
             "producttype": "INTRADAY",
             "duration": "DAY",
@@ -40,7 +40,7 @@ def place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
         result['status'] = True
         result['orderId'] = orderId
         result['TransactionType'] = BUYSELL
-        result['TriggerPrice'] = getLTP(TOKEN, SYMBOL)
+        result['TriggerPrice'] = getLTP(EXCHANGE, TOKEN, SYMBOL)
         result['Symbol'] = SYMBOL
         result['LOTSIZE'] = LOTSIZE
         result['LOT'] = LOT
@@ -57,7 +57,7 @@ def place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
         return result
     
 
-def fake_place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
+def fake_place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL, EXCHANGE):
     
     configInfo = get_config_obj()
 
@@ -68,7 +68,7 @@ def fake_place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
             "tradingsymbol": SYMBOL,
             "symboltoken": TOKEN,
             "transactiontype": BUYSELL,
-            "exchange": 'NFO',
+            "exchange": EXCHANGE,
             "ordertype": 'MARKET',
             "producttype": "INTRADAY",
             "duration": "DAY",
@@ -82,7 +82,7 @@ def fake_place_order(TOKEN, SYMBOL, LOT, LOTSIZE, BUYSELL):
         result['TriggerTime'] = datetime.datetime.now()
         result['status'] = True
         result['TransactionType'] = BUYSELL
-        result['TriggerPrice'] = getLTP(TOKEN, SYMBOL)
+        result['TriggerPrice'] = getLTP(EXCHANGE, TOKEN, SYMBOL)
         result['Symbol'] = SYMBOL
         result['LOTSIZE'] = LOTSIZE
         result['LOT'] = LOT

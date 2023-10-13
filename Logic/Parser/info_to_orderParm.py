@@ -6,24 +6,23 @@ def Info_To_Order(InfoTxt):
     CEPE_FILTERS = {'CE':'CE', 'CALL':'CE', 'ce':'CE', 'call':'CE', 'Call':'CE', 'PE':'PE', 'PUT':'PE', 'pe':'PE', 'put':'PE', 'Put':'PE'}
 
     INDEX = InfoTxt['index']
-    print(INDEX)
     SP = int(InfoTxt['strike_price'])
     CEPE = CEPE_FILTERS[InfoTxt['type']]
     ISVALID = InfoTxt['valid_message']
-
     TokenInfo = getTokenInfo(INDEX, CEPE, SP).iloc[0]
+    print(TokenInfo)
     symbol = TokenInfo['symbol']
     token = TokenInfo['token']
+    exchange = TokenInfo['exch_seg']
     lotSize = int(TokenInfo['lotsize'])
-
-    ltp = getLTP(token, symbol)
+    ltp = getLTP(exchange, token, symbol)
 
     if ltp < 14:
         HERO_ZERO_BALANCE = configObj.HeroZeroBalance
-        AffordableLots = getAffordableLotSize(token, symbol, lotSize, HERO_ZERO_BALANCE)
+        AffordableLots = getAffordableLotSize(exchange, token, symbol, lotSize, HERO_ZERO_BALANCE)
     else:
         WalletBalance = configObj.NormalBalance
-        AffordableLots = getAffordableLotSize(token, symbol, lotSize, WalletBalance)
+        AffordableLots = getAffordableLotSize(exchange, token, symbol, lotSize, WalletBalance)
 
 
     OrderParm = {
@@ -36,6 +35,7 @@ def Info_To_Order(InfoTxt):
         'Symbol':symbol,
         'ltp': ltp,
         'Message' : 'Message From PaLM2 API',
+        'exchange':exchange,
         'isValid':ISVALID
     }
 

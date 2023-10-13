@@ -52,7 +52,7 @@ def UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP, SL):
     LiveDbObj.save()
     return True
     
-def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
+def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
 
     try:
         result = {}
@@ -61,7 +61,7 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         FourcedExitWithSelling = ConfigObj.ForcedExitWithSelling
         
         if FourcedExitWithoutSelling:
-            order = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            order = fake_place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL', EXCHANGE)
             result['order'] = order
             result['status'] = True
             print(f'Forced Exit Without Selling')
@@ -72,7 +72,7 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
 
         elif FourcedExitWithSelling:
             print(f'Forced Exit With Selling')
-            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL', EXCHANGE)
             result['order'] = order
             result['status'] = True
             update.message.reply_text(f'Forced Exit With Selling Remaining all QTY')
@@ -92,7 +92,7 @@ def ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         print(f'Error in ManageForcedExit : {e}')
         return result
 
-def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, update):
+def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, EXCHANGE, update):
         
     result = {}
             
@@ -100,7 +100,7 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
 
         time.sleep(0.2)
 
-        ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update)
+        ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update)
 
         print(ForcedExit)
 
@@ -111,12 +111,12 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
             
         STATUS, SL, BreakAt, Margin = DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE)
     
-        LTP = getLTP(TOKEN, SYMBOL)
+        LTP = getLTP(EXCHANGE, TOKEN, SYMBOL)
     
         if LTP <= SL or LTP >=BreakAt:
                 
             if LTP <= SL:
-                order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+                order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL', EXCHANGE)
                 result['order'] = order
                 result['CarryForward'] = False
                 print(f"100% QTY BOOKED WITH SL.")
@@ -131,7 +131,7 @@ def ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, updat
     
     return result
 
-def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, update):
+def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, EXCHANGE, update):
     result = {}
 
     HighestLTP = BUYINGPRICE
@@ -140,14 +140,14 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, upda
 
         time.sleep(0.2)
 
-        ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update)
+        ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update)
 
         if ForcedExit['status']:
             result['CarryForward'] = False
             result['order'] = ForcedExit['order']
             break
             
-        LTP = getLTP(TOKEN, SYMBOL)
+        LTP = getLTP(EXCHANGE, TOKEN, SYMBOL)
 
         if HighestLTP < LTP:
             HighestLTP = LTP
@@ -157,7 +157,7 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, upda
         TrailingSL = HighestLTP*TrailingMargin
 
         if LTP <= TrailingSL:
-            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL', EXCHANGE)
             result['order'] = order
             result['CarryForward'] = True
             break
@@ -166,9 +166,9 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, upda
     
     return result
 
-def ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, update):
+def ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, EXCHANGE, update):
 
-    BUY = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'BUY')
+    BUY = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'BUY', EXCHANGE)
     
     message_date = update.message.date
     ist_timezone = pytz.timezone('Asia/Kolkata')

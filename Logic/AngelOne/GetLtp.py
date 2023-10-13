@@ -1,7 +1,7 @@
 from SmartApi import SmartConnect
 from App.DataHub import get_config_obj
 
-def getLTP(TOKEN, SYMBOL):
+def getLTP(EXCHANGE, TOKEN, SYMBOL):
     configInfo = get_config_obj()
 
     obj=SmartConnect(
@@ -12,7 +12,7 @@ def getLTP(TOKEN, SYMBOL):
         userId=configInfo.AngleOneUserId
     )
 
-    instrument_data = obj.ltpData('NFO', SYMBOL, TOKEN)
+    instrument_data = obj.ltpData(EXCHANGE, SYMBOL, TOKEN)
     ltp = instrument_data['data']['ltp']
     return ltp
 

@@ -4,11 +4,12 @@ from App.DataHub import *
 from .manageOrder import ManageSL, ManageTSL, ManageBUY
 from App.models import Transaction, Order, LiveDb
 
-def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
+
+def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     
     # Trail Stop Loss After Profit
 
-    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SLTGT', update)
+    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SLTGT', EXCHANGE, update)
 
     if BUY['status']:
         orderObj = Order(
@@ -29,12 +30,12 @@ def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         BuyObj.save()
 
         BUYINGPRICE = BUY['TriggerPrice']
-        Result = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SLTGT', BUYINGPRICE, update)
+        Result = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SLTGT', BUYINGPRICE, EXCHANGE, update)
 
         StrategyConfig = get_strategy_by_code('SLTGT')
         
         if Result['CarryForward']:
-            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL')
+            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL', EXCHANGE)
 
             SellObj = Transaction(
                 OrderObj=orderObj,
@@ -80,10 +81,10 @@ def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     return True
 
 
-def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
+def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # Trail Stop Loss After Profit
 
-    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', update)
+    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', EXCHANGE, update)
 
     if BUY['status']:
         orderObj = Order(
@@ -104,14 +105,14 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         BuyObj.save()
         BUYINGPRICE = BUY['TriggerPrice']
 
-        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', BUYINGPRICE, update)
+        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', BUYINGPRICE, EXCHANGE, update)
         
         StrategyConfig = get_strategy_by_code('TSLAP')
 
         if MSL['CarryForward']:
             print(f"TSLAP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
             update.message.reply_text(f"TSLAP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
-            TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', BUYINGPRICE, update)
+            TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAP', BUYINGPRICE, EXCHANGE, update)
             SellObj = Transaction(
                 OrderObj=orderObj,
                 TransactionSymbol=SYMBOL,
@@ -155,10 +156,10 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     return True
 
 
-def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
+def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # Trail Stop Loss After Profit
 
-    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAPB', update)
+    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAPB', EXCHANGE, update)
 
     if BUY['status']:
         orderObj = Order(
@@ -182,12 +183,12 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         LOT_TGT_1 = math.ceil(TOTAL_LOT*0.70)
         LOT_TGT_2 = TOTAL_LOT - LOT_TGT_1
 
-        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAPB', BUYINGPRICE, update)
+        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLAPB', BUYINGPRICE, EXCHANGE, update)
         
         StrategyConfig = get_strategy_by_code('TSLAPB')
 
         if MSL['CarryForward']:
-            order = place_order(TOKEN, SYMBOL, LOT_TGT_1, LOTSIZE, 'SELL')
+            order = place_order(TOKEN, SYMBOL, LOT_TGT_1, LOTSIZE, 'SELL', EXCHANGE)
             Sell1Obj = Transaction(
                 OrderObj=orderObj,
                 TransactionSymbol=SYMBOL,
@@ -201,7 +202,7 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
             
             print(f"TSLAPB : 50% QTY BOOKED AT {StrategyConfig.TrailingStartAt}% OF TGT.")
             update.message.reply_text(f"TSLAPB : 50% QTY BOOKED AT {StrategyConfig.TrailingStartAt}% OF TGT.")
-            TSL = ManageTSL(TOKEN, SYMBOL, LOT_TGT_2, LOTSIZE, 'TSLAPB', BUYINGPRICE, update)
+            TSL = ManageTSL(TOKEN, SYMBOL, LOT_TGT_2, LOTSIZE, 'TSLAPB', BUYINGPRICE, EXCHANGE, update)
             Sell2Obj = Transaction(
                 OrderObj=orderObj,
                 TransactionSymbol=SYMBOL,
@@ -246,10 +247,10 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
     return True
 
 
-def HEROZERO(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
+def HEROZERO(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # HERO ZERO
     
-    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', update)
+    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', EXCHANGE, update)
 
     if BUY['status']:
         orderObj = Order(
@@ -270,14 +271,14 @@ def HEROZERO(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, update):
         BuyObj.save()
         BUYINGPRICE = BUY['TriggerPrice']    
 
-        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', BUYINGPRICE, update)
+        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', BUYINGPRICE, EXCHANGE, update)
         
         StrategyConfig = get_strategy_by_code('HEROZERO')
 
         if MSL['CarryForward']:
             print(f"HEROZERO : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
             update.message.reply_text(f"HEROZERO : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
-            TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', BUYINGPRICE, update)
+            TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'HEROZERO', BUYINGPRICE, EXCHANGE, update)
             SellObj = Transaction(
                 OrderObj=orderObj,
                 TransactionSymbol=SYMBOL,
