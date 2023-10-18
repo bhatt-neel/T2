@@ -17,7 +17,7 @@ def Info_To_Order(InfoTxt):
     lotSize = int(TokenInfo['lotsize'])
     ltp = getLTP(exchange, token, symbol)
 
-    if ltp < 14:
+    if ltp <= 16:
         HERO_ZERO_BALANCE = configObj.HeroZeroBalance
         AffordableLots = getAffordableLotSize(exchange, token, symbol, lotSize, HERO_ZERO_BALANCE)
     else:

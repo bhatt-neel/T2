@@ -49,6 +49,7 @@ class Configuration(models.Model):
 
 
     BotStatus = models.BooleanField(default=False)
+    FakeLTPStatus = models.BooleanField(default=False)
 
     # =============== FORCED EXIT =================
     ForcedExitWithoutSelling = models.BooleanField(default=False)
@@ -121,6 +122,7 @@ class LiveDb(models.Model):
     Returns = models.FloatField(null=True, blank=True)
     PNL = models.FloatField(null=True, blank=True)
     SL = models.FloatField(null=True, blank=True)
+    FakeLTP = models.FloatField(null=True, blank=True, default=100)
     running = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
