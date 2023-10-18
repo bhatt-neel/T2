@@ -9,10 +9,8 @@ import os
 import traceback
 
 
-def message_handler(update, context):
-    
+def message_handler(update, context):  
     try:
-
         if get_bot_status():
             print(f"\n=================== CP1 {datetime.datetime.now()} CP1 ===================\n")
             

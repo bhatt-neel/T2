@@ -16,6 +16,9 @@ if __name__ == '__main__':
 
     updater = Updater(TELEGRAM_BOT_API, use_context=True)
 
+    def msg(update, context):
+        update.message.reply_text("Please use the commands to interact with the bot.")
+
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler('start', start_handler))
