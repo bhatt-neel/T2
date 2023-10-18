@@ -1,6 +1,6 @@
 from App.DataHub import *
 import math
-from .strategy import SLTGT, TSLAP, TSLAPB, HEROZERO
+from .strategy import SLTGT, TSLAP, TSLAPB, HEROZERO, TSLOP
 import datetime
 import pandas as pd
 from .GetLtp import getLTP
@@ -95,6 +95,10 @@ def DecideStrategy(JsonOrderParm, update):
                     print("DecideStrategy : MOVING FORWARD WITH TSLAP")
                     Strategy = TSLAP(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
 
+                elif ConfigObj.ActiveStrategyCodeFor0TAll == 'TSLOP':
+                    print("DecideStrategy : MOVING FORWARD WITH TSLOP")
+                    Strategy = TSLOP(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
+
                 elif ConfigObj.ActiveStrategyCodeFor0TAll == 'TSLAPB':
                     print("DecideStrategy : MOVING FORWARD WITH TSLAPB")
                     Strategy = TSLAPB(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
@@ -102,6 +106,7 @@ def DecideStrategy(JsonOrderParm, update):
                 elif ConfigObj.ActiveStrategyCodeFor0TAll == 'SLTGT':
                     print("DecideStrategy : MOVING FORWARD WITH SLTGT")
                     Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
+
         else:
             print("DecideStrategy : Wallet Balance is Too Low To Buy This Order")
             update.message.reply_text("DecideStrategy : Wallet Balance is Too Low To Buy This Order")
