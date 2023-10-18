@@ -1,7 +1,7 @@
 import math
 from .place_order import place_order
 from App.DataHub import *
-from .manageOrder import ManageSL, ManageTSL, ManageBUY
+from .manageOrder import ManageSL, ManageTSL, ManageBUY, ManageTslOnProfit
 from App.models import Transaction, Order, LiveDb
 
 
@@ -152,6 +152,81 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     else:
         print("TSLAP : Error While Buying Order.")
         update.message.reply_text("TSLAP : Error While Buying Order.")
+
+    return True
+
+
+def TSLOP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
+    # Trail Stop Loss On Profit
+
+    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLOP', EXCHANGE, update)
+
+    if BUY['status']:
+        orderObj = Order(
+            OrderSymbol=SYMBOL,
+            OrderStatus=False,
+            StrategyCode='TSLOP'
+        )
+        orderObj.save()
+        BuyObj = Transaction(
+            OrderObj=orderObj,
+            TransactionSymbol=SYMBOL,
+            BuySell='BUY',
+            TransactionLotSize=LOTSIZE,
+            TransactionLot=TOTAL_LOT,
+            TriggerPrice=BUY['TriggerPrice'],
+            status=True
+        )
+        BuyObj.save()
+        BUYINGPRICE = BUY['TriggerPrice']
+
+        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLOP', BUYINGPRICE, EXCHANGE, update)
+        
+        StrategyConfig = get_strategy_by_code('TSLOP')
+
+        if MSL['CarryForward']:
+            print(f"TSLOP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
+            update.message.reply_text(f"TSLOP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN ( ROI ).")
+            TSL = ManageTslOnProfit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLOP', BUYINGPRICE, EXCHANGE, update)
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=TSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
+            print(f"TSLOP : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
+            update.message.reply_text(f"TSLOP : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
+
+        else:
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=MSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
+            print(f"TSLOP : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
+            update.message.reply_text(f"TSLAP : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
+    else:
+        print("TSLOP : Error While Buying Order.")
+        update.message.reply_text("TSLOP : Error While Buying Order.")
 
     return True
 
