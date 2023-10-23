@@ -33,7 +33,7 @@ def DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE):
         StrategyConfig = get_strategy_by_code('TSLOP')
         SL = BUYINGPRICE*(1 - (StrategyConfig.SL/100))
         TGT_OR_BREAK_EVEN = BUYINGPRICE*(1 + (StrategyConfig.TrailingStartAt/100))
-        TrailingMargin = 1 - (StrategyConfig.TrailingMargin/100)
+        TrailingMargin = StrategyConfig.TrailingMargin/100
         return [True, SL, TGT_OR_BREAK_EVEN, TrailingMargin]
     
     elif StrategyCode == 'TSLAPB':

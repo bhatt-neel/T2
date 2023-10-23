@@ -352,7 +352,7 @@ def MI7(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
             if WSL['CarryForward']:
                 print(f"MI7 : OUR TRADE SURVIVED NOW TRAILING.")
                 update.message.reply_text(f"MI7 : OUR TRADE SURVIVED NOW TRAILING.")
-                TSL = ManageTslOnProfit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'MI7', BUYINGPRICE, EXCHANGE, update)
+                TSL = ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'MI7', BUYINGPRICE, EXCHANGE, update)
                 SellObj = Transaction(
                     OrderObj=orderObj,
                     TransactionSymbol=SYMBOL,

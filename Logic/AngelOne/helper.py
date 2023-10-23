@@ -1,6 +1,6 @@
 from App.DataHub import *
 import math
-from .strategy import SLTGT, TSLAP, TSLAPB, HEROZERO, TSLOP
+from .strategy import SLTGT, TSLAP, TSLAPB, HEROZERO, TSLOP, MI7
 import datetime
 import pandas as pd
 from .GetLtp import getLTP
@@ -77,6 +77,14 @@ def DecideStrategy(JsonOrderParm, update):
             elif ConfigObj.ActiveStrategyCodeFor0T1 == 'SLTGT':
                 print("DecideStrategy : MOVING FORWARD WITH SLTGT")
                 Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
+
+            elif ConfigObj.ActiveStrategyCodeFor0TAll == 'MI7':
+                print("DecideStrategy : MOVING FORWARD WITH MI7")
+                Strategy = MI7(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
+
+            elif ConfigObj.ActiveStrategyCodeFor0TAll == 'TSLOP':
+                print("DecideStrategy : MOVING FORWARD WITH TSLOP")
+                Strategy = TSLOP(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
                 
         
         elif LOT >= 2:
@@ -106,6 +114,10 @@ def DecideStrategy(JsonOrderParm, update):
                 elif ConfigObj.ActiveStrategyCodeFor0TAll == 'SLTGT':
                     print("DecideStrategy : MOVING FORWARD WITH SLTGT")
                     Strategy = SLTGT(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
+
+                elif ConfigObj.ActiveStrategyCodeFor0TAll == 'MI7':
+                    print("DecideStrategy : MOVING FORWARD WITH MI7")
+                    Strategy = MI7(TOKEN, SYMBOL, LOT, LOTSIZE, EXCHANGE, update)
 
         else:
             print("DecideStrategy : Wallet Balance is Too Low To Buy This Order")
