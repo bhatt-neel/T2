@@ -22,6 +22,13 @@ def DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE):
         TrailingMargin = 1 - (StrategyConfig.TrailingMargin/100)
         return [True, SL, TGT_OR_BREAK_EVEN, TrailingMargin]
     
+    elif StrategyCode == 'MI7':
+        StrategyConfig = get_strategy_by_code('MI7')
+        SL = BUYINGPRICE*(1 - (StrategyConfig.SL/100))
+        TGT_OR_BREAK_EVEN = BUYINGPRICE*(1 + (StrategyConfig.TrailingStartAt/100))
+        TrailingMargin = 1 - (StrategyConfig.TrailingMargin/100)
+        return [True, SL, TGT_OR_BREAK_EVEN, TrailingMargin]
+    
     elif StrategyCode == 'TSLOP':
         StrategyConfig = get_strategy_by_code('TSLOP')
         SL = BUYINGPRICE*(1 - (StrategyConfig.SL/100))
@@ -171,6 +178,43 @@ def ManageTSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, EXCH
 
         UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP, TrailingSL)
     
+    return result
+
+def WatchSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, EXCHANGE, update):
+    result = {}
+
+    HighestLTP = BUYINGPRICE
+            
+    while True:
+
+        time.sleep(0.2)
+
+        ForcedExit = ManageForcedExit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update)
+
+        if ForcedExit['status']:
+            result['CarryForward'] = False
+            result['order'] = ForcedExit['order']
+            break
+
+        STATUS, SL, BreakAt, Margin = DECIDE_SL_AND_BREAK_EVEN(StrategyCode, BUYINGPRICE)
+            
+        LTP = getLTP(EXCHANGE, TOKEN, SYMBOL)
+
+        if HighestLTP < LTP:
+            HighestLTP = LTP
+
+        if LTP < BreakAt:
+            result['CarryForward'] = False
+            order = place_order(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'SELL', EXCHANGE)
+            result['order'] = order
+            break
+
+        elif LTP > BUYINGPRICE*1.26:
+            result['CarryForward'] = True
+            break
+
+        UpdateLiveDb(BUYINGPRICE, StrategyCode, TOTAL_LOT, LOTSIZE, LTP, BreakAt)
+
     return result
 
 def ManageTslOnProfit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, BUYINGPRICE, EXCHANGE, update):

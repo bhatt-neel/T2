@@ -5,6 +5,7 @@ import pyotp
 import pandas as pd
 import datetime
 
+
 def UpdateTokenMap():
     try:
         url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'

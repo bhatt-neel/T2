@@ -80,3 +80,13 @@ def GetTodaysReturns():
 @register.filter(name="multiply")
 def multiply(n1, n2):
     return round(n1*n2, 2)
+
+# @register.filter(name="GetNumberOfLossTradesForToday")
+# def GetNumberOfLossTradesForToday():
+#     today = datetime.date.today()
+#     Orders = Order.objects.filter(CreatedDate__date=today, OrderStatus=True)
+#     LossOrders = []
+#     for i in Orders:
+#         if GetOrderPnl(i) < 0:
+#             LossOrders.append(i)
+#     return len(LossOrders)

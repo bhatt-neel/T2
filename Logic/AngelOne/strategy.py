@@ -1,7 +1,7 @@
 import math
 from .place_order import place_order
 from App.DataHub import *
-from .manageOrder import ManageSL, ManageTSL, ManageBUY, ManageTslOnProfit
+from .manageOrder import ManageSL, ManageTSL, ManageBUY, ManageTslOnProfit, WatchSL
 from App.models import Transaction, Order, LiveDb
 
 
@@ -80,7 +80,6 @@ def SLTGT(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
 
     return True
 
-
 def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # Trail Stop Loss After Profit
 
@@ -155,7 +154,6 @@ def TSLAP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
 
     return True
 
-
 def TSLOP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # Trail Stop Loss On Profit
 
@@ -185,7 +183,7 @@ def TSLOP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
         StrategyConfig = get_strategy_by_code('TSLOP')
 
         if MSL['CarryForward']:
-            print(f"TSLOP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN.")
+            print(f"TSLOP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN ( ROI ).")
             update.message.reply_text(f"TSLOP : BREAK EVEN POINT TOUCHED NOW TRAILLING ALL QTY WITH {StrategyConfig.TrailingMargin}% OF MARGIN ( ROI ).")
             TSL = ManageTslOnProfit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'TSLOP', BUYINGPRICE, EXCHANGE, update)
             SellObj = Transaction(
@@ -229,7 +227,6 @@ def TSLOP(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
         update.message.reply_text("TSLOP : Error While Buying Order.")
 
     return True
-
 
 def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # Trail Stop Loss After Profit
@@ -321,6 +318,104 @@ def TSLAPB(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
 
     return True
 
+def MI7(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
+    BUY = ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'MI7', EXCHANGE, update)
+
+    if BUY['status']:
+        orderObj = Order(
+            OrderSymbol=SYMBOL,
+            OrderStatus=False,
+            StrategyCode='SLTGT'
+        )
+        orderObj.save()
+        BuyObj = Transaction(
+            OrderObj=orderObj,
+            TransactionSymbol=SYMBOL,
+            BuySell='BUY',
+            TransactionLotSize=LOTSIZE,
+            TransactionLot=TOTAL_LOT,
+            TriggerPrice=BUY['TriggerPrice'],
+            status=True
+        )
+        BuyObj.save()
+        BUYINGPRICE = BUY['TriggerPrice']
+
+        MSL = ManageSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'MI7', BUYINGPRICE, EXCHANGE, update)
+
+        StrategyConfig = get_strategy_by_code('MI7')
+
+        if MSL['CarryForward']:
+            print(f"MI7 : BREAK EVEN POINT TOUCHED NOW WATCHING SL.")
+            update.message.reply_text(f"MI7 : BREAK EVEN POINT TOUCHED NOW WATCHING SL.")
+            WSL = WatchSL(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'MI7', BUYINGPRICE, EXCHANGE, update)
+
+            if WSL['CarryForward']:
+                print(f"MI7 : OUR TRADE SURVIVED NOW TRAILING.")
+                update.message.reply_text(f"MI7 : OUR TRADE SURVIVED NOW TRAILING.")
+                TSL = ManageTslOnProfit(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, 'MI7', BUYINGPRICE, EXCHANGE, update)
+                SellObj = Transaction(
+                    OrderObj=orderObj,
+                    TransactionSymbol=SYMBOL,
+                    BuySell='SELL',
+                    TransactionLotSize=LOTSIZE,
+                    TransactionLot=TOTAL_LOT,
+                    TriggerPrice=TSL['order']['TriggerPrice'],
+                    status=True
+                )
+                SellObj.save()
+                orderObj.OrderStatus = True
+                orderObj.save()
+                LiveDbObj = LiveDb.objects.all().first()
+                LiveDbObj.running = False
+                LiveDbObj.save()
+                print(f"MI7 : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
+                update.message.reply_text(f"MI7 : {StrategyConfig.TrailingMargin}% OF TRAILING SL HIT.")
+
+            else:
+
+                SellObj = Transaction(
+                    OrderObj=orderObj,
+                    TransactionSymbol=SYMBOL,
+                    BuySell='SELL',
+                    TransactionLotSize=LOTSIZE,
+                    TransactionLot=TOTAL_LOT,
+                    TriggerPrice=WSL['order']['TriggerPrice'],
+                    status=True
+                )
+
+                SellObj.save()
+                orderObj.OrderStatus = True
+                orderObj.save()
+                LiveDbObj = LiveDb.objects.all().first()
+                LiveDbObj.running = False
+                LiveDbObj.save()
+                print(f"MI7 : TRADE DOSEN'T GO IN OUR SURVIVED.")
+                update.message.reply_text(f"MI7 : TRADE DOSEN'T GO IN OUR SURVIVED.")
+        
+        else:
+            SellObj = Transaction(
+                OrderObj=orderObj,
+                TransactionSymbol=SYMBOL,
+                BuySell='SELL',
+                TransactionLotSize=LOTSIZE,
+                TransactionLot=TOTAL_LOT,
+                TriggerPrice=MSL['order']['TriggerPrice'],
+                status=True
+            )
+            SellObj.save()
+            orderObj.OrderStatus = True
+            orderObj.save()
+            LiveDbObj = LiveDb.objects.all().first()
+            LiveDbObj.running = False
+            LiveDbObj.save()
+            print(f"MI7 : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")
+            update.message.reply_text(f"MI7 : 100% QTY BOOKED WITH SL OF {StrategyConfig.SL}%.")   
+
+    else:
+        print("MI7 : Error While Buying Order.")
+        update.message.reply_text("MI7 : Error While Buying Order.")
+
+    return True
 
 def HEROZERO(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, EXCHANGE, update):
     # HERO ZERO
