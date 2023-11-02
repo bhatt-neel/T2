@@ -18,7 +18,7 @@ def UpdateTokenMap():
         token_df.to_csv(TokenMapPath, index=False)
 
         confObj = get_config_obj()
-        confObj = Configuration.objects.all().first()
+        confObj = Configuration.objects.all()[0]
 
         OBJ=SmartConnect(api_key=confObj.AngleOneApiKey)
         OBJ.generateSession(confObj.AngleOneUserName,confObj.AngleOnePassword, pyotp.TOTP(confObj.AngleOneTotp).now())
