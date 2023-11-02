@@ -12,7 +12,7 @@ def get_strategy_by_code(StrategyCode):
     
 def get_config_obj():
     try:
-        return Configuration.objects.all().first()
+        return Configuration.objects.all()[0]
     
     except Configuration.DoesNotExist:
         print("Configuration Does Not Exist")
