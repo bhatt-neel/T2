@@ -77,8 +77,10 @@ def photo_handler(update, context):
 def status_handler(update, context):
     if get_bot_status():
         update.message.reply_text("**Bot Status:** Online\nTo stop it, please use the command `/stop`.", parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_text("#RahulGaddar")
     else:
         update.message.reply_text("**Bot Status:** Offline\nTo start it, please use the command `/start`.", parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_text("#RahulGaddar")
 
 def fund_handler(update, context):
     Normal = str(get_config_obj().NormalBalance)
@@ -123,14 +125,17 @@ def start_handler(update, context):
         configInfo.save()
         update.message.reply_text("**Bot Status:** Online\nThe bot has been initiated! To stop it, please use the command `/stop`.",
                               parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_text("#RahulGaddar")
         
 def stop_handler(update, context):
     if not get_bot_status():
         update.message.reply_text("Bot is Already Offline\nTo start it, please use the command `/start`.", parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_text("#RahulGaddar")
     else:
         configInfo = get_config_obj()
         configInfo.BotStatus = False
         configInfo.save()
         update.message.reply_text("**Bot Status:** Offline\nThe bot has been Shutdown! To start it, please use the command `/start`.",
                               parse_mode=ParseMode.MARKDOWN)
+        update.message.reply_text("#RahulGaddar")
         
