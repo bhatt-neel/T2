@@ -278,5 +278,6 @@ def ManageBUY(TOKEN, SYMBOL, TOTAL_LOT, LOTSIZE, StrategyCode, EXCHANGE, update)
     ConfigObj.BotStatus = False
     ConfigObj.save()
     update.message.reply_text("Bot Status: Offline\nTo activate the bot, please use the command /start.")
+    update.message.reply_text("#RahulGaddar")
 
     return BUY
